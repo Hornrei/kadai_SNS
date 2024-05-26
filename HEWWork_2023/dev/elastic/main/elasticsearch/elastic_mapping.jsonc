@@ -1,0 +1,61 @@
+// PUT /main.main.posts
+{
+  "settings": {
+    "analysis": {
+        "filter" : {
+            "kuromoji_multiplexer" : {
+              "type" : "multiplexer",
+              "filters" : [
+                "lowercase",
+                "lowercase, porter_stem",
+                "kuromoji_readingform"
+              ]
+            }
+          },
+      "analyzer": {
+        "my_ja_analyzer": {
+          "type": "custom",
+          "char_filter": [
+            "icu_normalizer"
+          ],
+          "tokenizer": "kuromoji_tokenizer",
+          "filter": [
+            "kuromoji_baseform",
+            "kuromoji_part_of_speech",
+            "ja_stop",
+            "kuromoji_number",
+            "kuromoji_stemmer",
+            "kuromoji_multiplexer"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "post_id": {
+        "type": "keyword"
+      },
+      "user_id": {
+        "type": "keyword"
+      },
+      "content": {
+        "type": "text",
+        "analyzer": "my_ja_analyzer",
+        "fielddata": true
+      },
+      "comment_id": {
+        "type": "keyword"
+      },
+      "edit_id": {
+        "type": "keyword",
+      },
+      "timestamp": {
+        "type": "date"
+      },
+      "image_url": {
+        "type": "keyword"
+      }
+    }
+  }
+}

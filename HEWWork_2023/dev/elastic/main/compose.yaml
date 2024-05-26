@@ -1,0 +1,88 @@
+
+# メイン
+services:
+  # DB
+  # mysql:
+  #   build: mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: main
+  #   ports:
+  #     - 3306:3306
+
+  # elastic search
+  elasticsearch:
+    build: elasticsearch
+    ports:
+      - 9200:9200
+
+  kibana:
+    build: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+
+  # kafka
+  kafka:
+    build: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      TZ: Asia/Tokyo
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    ports:
+      - "9092:9092"
+  
+  kafka-ui:
+    build: kafka-ui
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: hewpj
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    ports:
+      - 8080:8080
+  
+  kafka-connect:
+    build: kafka-connect
+    depends_on:
+      - kafka
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_ADVERTISED_HOST_NAME: localhost
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: hewpj
+      CONNECT_CONFIG_STORAGE_TOPIC: hewpj-config
+      CONNECT_OFFSET_STORAGE_TOPIC: hewpj-offset
+      CONNECT_STATUS_STORAGE_TOPIC: hewpj-status
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+    volumes:
+      - ./kafka-connect/plugins:/usr/share/confluent-hub-components
+    ports:
+      - 8083:8083
+
+  # zookeeper
+  zookeeper:
+    build: zookeeper
+    depends_on:
+      - elasticsearch
+      # - mysql
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - 2181:2181
+

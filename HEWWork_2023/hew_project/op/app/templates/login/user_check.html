@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ログイン</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='css/name.css') }}"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <h2>Login</h2>
+        <form method="post" action="{{ url_for('login') }}">
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value="{{username}}"
+            class="user2"
+            readonly
+          />
+          <!-- <label for="password">パスワード:</label> -->
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="password"
+          />
+
+          <div class="buttonset">
+            <button type="submit" class="wordbutton">
+              Login with a password
+            </button>
+            <div class="dummy">
+              {% for value in args %}
+              <input type="hidden" name="{{value}}" value="{{args[value]}}" />
+              {% endfor %}
+            </div>
+
+            <button type="submit" id="passkey" class="keybutton">
+              Login with a passkey
+            </button>
+          </div>
+          <!-- end buttonset -->
+        </form>
+      </div>
+      <!-- end container -->
+    </div>
+    <script
+      type="module"
+      src="{{ url_for('static', filename='js/base64.js') }}"
+    ></script>
+    <script type="module">
+      import {
+        base64ToArray,
+        arrayToBase64,
+      } from "{{ url_for('static', filename='js/base64.js') }}";
+
+      function formatResponse(payload) {
+        const credential = {};
+        credential.id = payload.id;
+        credential.rawId = arrayToBase64(payload.rawId);
+        credential.type = payload.type;
+        const response = {};
+        response.clientDataJSON = arrayToBase64(
+          payload.response.clientDataJSON
+        );
+        response.authenticatorData = arrayToBase64(
+          payload.response.authenticatorData
+        );
+        response.signature = arrayToBase64(payload.response.signature);
+        response.userHandle = arrayToBase64(payload.response.userHandle);
+        credential.response = response;
+        return credential;
+      }
+      // パスキーでログインボタンを押したときの処理
+      document.getElementById("passkey").addEventListener("click", async () => {
+        const response = await fetch(`/api/signinRequest`, { method: "POST" });
+        const options = await response.json();
+        console.log(options);
+        options.publicKey.challenge = base64ToArray(
+          options.publicKey.challenge
+        );
+        // この時点で名前が取得できているので,クレデンシャルIDを取得してallowCredentialsのIDに追加するとよさそう
+        options.mediation = "silent";
+        const credential = await navigator.credentials.get(options);
+
+        console.log(credential);
+        const response2 = await fetch(`/api/signinResponse`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formatResponse(credential)),
+        });
+        if (response2.ok) {
+          // loginに今ついているクエリパラメータをすべて保ったままリダイレクト
+          window.location.href = `/authorize${window.location.search}`;
+        } else {
+          throw new Error("Error posting sign in response");
+        }
+      });
+    </script>
+    <script>
+      (() => {
+        // passkeyが使えるかどうかを判定
+        if (!navigator.credentials || !navigator.credentials.get) {
+          document.getElementById("passkey").disabled = true;
+        }
+      })();
+    </script>
+  </body>
+</html>

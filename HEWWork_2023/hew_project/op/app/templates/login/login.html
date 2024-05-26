@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ログイン</title>
+    <!-- cssを読み込む -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='css/name.css') }}"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <h2>Login</h2>
+        <!-- パスキーautofill -->
+        <form method="GET" action="{{ url_for('login') }}">
+          <div>
+            <!-- <label for="username" class="ireru">Username</label> -->
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username"
+              required
+              autocomplete="username webauthn"
+            />
+            {% with messages = get_flashed_messages() %} {% for message in
+            messages %}
+
+            <p color="orange">{{ message }}</p>
+
+            {% endfor %} {% endwith %}
+          </div>
+          <div class="hidden1"></div>
+          <div>
+            <button type="submit" class="botan">next</button>
+          </div>
+        </form>
+
+        <form method="get" action="{{url_for('signup')}}">
+          <div class="up">
+            <button type="submit" class="signup">sign up</button>
+          </div>
+          <div class="hidden2"></div>
+        </form>
+      </div>
+    </div>
+    <script>
+      (() => {
+        // class hidden にパラメーターを埋め込む
+        const url = new URL(decodeURIComponent(window.location.href));
+        const hidden = document.querySelector(".hidden1");
+        for (const [key, value] of url.searchParams) {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = key;
+          input.value = value;
+          hidden.appendChild(input);
+        }
+        const hidden2 = document.querySelector(".hidden2");
+        for (const [key, value] of url.searchParams) {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = key;
+          input.value = value;
+          hidden2.appendChild(input);
+        }
+      })();
+    </script>
+    <script
+      type="module"
+      src="{{ url_for('static', filename='js/base64.js') }}"
+    ></script>
+    <script type="module">
+      import {
+        base64ToArray,
+        arrayToBase64,
+      } from "{{ url_for('static', filename='js/base64.js') }}";
+      function getOptions() {
+        return fetch("/api/signinRequest", {
+          method: "POST",
+        }).then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Error getting options");
+          }
+        });
+      }
+      function postSigninResponse(response) {
+        return fetch("/api/signinResponse", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(response),
+        }).then((response) => {
+          if (response.ok) {
+            // loginに今ついているクエリパラメータをすべて保ったままリダイレクト
+            window.location.href = `/authorize${window.location.search}`;
+          } else {
+            throw new Error("Error posting registration response");
+          }
+        });
+      }
+
+      function formatResponse(payload) {
+        const credential = {};
+        credential.id = payload.id;
+        credential.rawId = arrayToBase64(payload.rawId);
+        credential.type = payload.type;
+        const response = {};
+        response.clientDataJSON = arrayToBase64(
+          payload.response.clientDataJSON
+        );
+        response.authenticatorData = arrayToBase64(
+          payload.response.authenticatorData
+        );
+        response.signature = arrayToBase64(payload.response.signature);
+        response.userHandle = arrayToBase64(payload.response.userHandle);
+        credential.response = response;
+        return credential;
+      }
+
+      (async () => {
+        if (
+          window.PublicKeyCredential &&
+          PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable &&
+          PublicKeyCredential.isConditionalMediationAvailable
+        ) {
+          try {
+            // Is conditional UI available in this browser?
+            const results = await Promise.all([
+              PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(),
+              PublicKeyCredential.isConditionalMediationAvailable(),
+            ]);
+            if (results.every((r) => r === true)) {
+              // If conditional UI is available, reveal the Create a passkey button.
+              let options = await getOptions();
+              options.publicKey.challenge = base64ToArray(
+                options.publicKey.challenge
+              );
+              const response = await navigator.credentials.get(options);
+              console.log(response);
+              postSigninResponse(formatResponse(response));
+            } else {
+              // If conditional UI isn't available, show a message.
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        } else {
+          // If WebAuthn isn't available, show a message.
+          $("#message").innerText = "This device does not support passkeys.";
+        }
+      })();
+    </script>
+  </body>
+</html>

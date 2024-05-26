@@ -1,0 +1,29 @@
+{
+  "name": "mysql-source-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "tasks.max": "1",
+    "database.hostname": "160.251.175.131",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "hsKdwb5oGH2L",
+    "database.server.id": "2184054",
+    "database.server.name": "dbserver1",
+    "database.whitelist": "main",
+    "table.whitelist": "main.posts",
+    "database.history.kafka.bootstrap.servers": "kafka:9092",
+    "database.history.kafka.topic": "dbserver1.main.posts",
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "false",
+    "transforms.unwrap.delete.handling.mode": "none",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false",
+    "include.schema.changes": "true",
+    "topic.prefix":"main",
+    "schema.history.internal.kafka.topic": "dbserver1.main.posts",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:9092"
+  }
+}

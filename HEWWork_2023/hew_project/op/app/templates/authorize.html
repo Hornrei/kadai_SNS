@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>認可</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/hew_project/op/app/static/css/name.css"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <h2>authorization</h2>
+
+        <div class="message">
+          <p>The app is requesting a login.</p>
+          <p class="jp">アプリケーションがログインを求めています</p>
+        </div>
+
+        <ul>
+          {% for scope in grant.scopes %}
+          <li>{{ scope }}</li>
+          {% endfor %}
+        </ul>
+        <p class="namae">{{user}}</p>
+
+        <form method="post" class="okno">
+          <button name="confirm" value="yes" class="ok">Accept ＆ Login</button>
+          <button name="confirm" value="no" class="no">
+            Login Reject ＆ Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

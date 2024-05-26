@@ -1,0 +1,15 @@
+fastapi
+pytest
+pillow
+pillow-avif-plugin
+httpx
+uvicorn
+requests
+itsdangerous
+authlib
+python-dotenv
+boto3
+botocore
+websockets
+pymysql
+elasticsearch

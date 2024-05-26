@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>サインアップ</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='css/name.css') }}"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <h2>signup</h2>
+        <form method="GET" action="{{ url_for('signup') }}">
+          <div>
+            <!-- <label for="username">ユーザー名:</label> -->
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username"
+            />
+          </div>
+
+          <div>
+            <button type="submit" class="botan" id="botan1">next</button>
+          </div>
+
+          <div class="hidden"></div>
+        </form>
+      </div>
+    </div>
+    <script>
+      (() => {
+        // class hidden にパラメーターを埋め込む
+        const url = new URL(decodeURIComponent(window.location.href));
+        const hidden = document.querySelector(".hidden");
+        for (const [key, value] of url.searchParams) {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = key;
+          input.value = value;
+          hidden.appendChild(input);
+        }
+      })();
+    </script>
+  </body>
+</html>

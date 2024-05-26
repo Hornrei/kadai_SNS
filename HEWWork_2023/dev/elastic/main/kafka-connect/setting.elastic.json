@@ -1,0 +1,21 @@
+{
+  "name": "elasticsearch-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics": "main.main.posts",
+    "connection.url": "http://elasticsearch:9200",
+    "type.name": "_doc",
+    "key.ignore": "true",
+    "schema.ignore": "true",
+    "transforms": "unwrap,key",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.key.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.key.field": "post_id",
+    "auto.create.indexes": "false", 
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false"
+  }
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>サインアップ</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/name.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+    <div class="container">
+    <h2>signup</h2>
+    <form method="post" action="{{ url_for('signup') }}">
+            <input type="text" id="username" name="username" value="{{username}}" class="user2" readonly>
+       
+            <input type="password" id="password" name="password" placeholder="password">
+       
+        <div class="hidden">
+            <!-- argsで渡されるクエリパラメーターをformの中に非表示で埋め込む -->
+            {% for value in args %}
+            <input type="hidden" name="{{value}}" value="{{args[value]}}">
+            {% endfor %}
+        </div>
+
+        <div class="buttonset">
+            <button type="submit" class="wordbutton">sign up with a password</button>
+        
+        <button type="submit" id="registerButton" class="keybutton">sign up with a passkey</button>
+        </div>
+    </form>
+    
+    </div>
+</div>
+
+    <script type="module" src="{{ url_for('static', filename='js/base64.js') }}" ></script>
+<script type="module">
+    document.getElementById('registerButton').addEventListener('click', createCredential);
+    import { base64ToArray, arrayToBase64 } from "{{ url_for('static', filename='js/base64.js') }}";
+    function getRegisterOption() {
+        return fetch(`/api/registerRequest?name=${document.getElementById('username').value}`, {
+            method: 'POST',
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error getting options');
+            }
+        });
+    }
+    function postRegisterResponse(response) {
+        console.log(JSON.stringify(response))
+        return fetch(`/api/registerResponse?name=${document.getElementById('username').value}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(response),
+        }).then((response) => {
+            if (response.ok) {
+                window.location.href = `/authorize${window.location.search}`;
+            } else {
+                throw new Error('Error posting registration response');
+            }
+        });
+    }
+    async function createCredential(){
+        let options = await getRegisterOption()
+
+        options.publicKey.challenge = base64ToArray(options.publicKey.challenge)
+        options.publicKey.user.id = base64ToArray(options.publicKey.user.id)
+        const response = await navigator.credentials.create(options)
+
+        const credential = {};
+        credential.id = response.id;
+        credential.rawId = arrayToBase64(response.rawId);
+        credential.type = response.type;
+        if (response.response) {
+            const clientDataJSON =
+            arrayToBase64(response.response.clientDataJSON);
+            const attestationObject =
+            arrayToBase64(response.response.attestationObject);
+            credential.response = {
+              clientDataJSON,
+              attestationObject
+            };
+          }
+        postRegisterResponse(credential)
+    }
+
+    (async ()=>{
+        const registerButton = document.getElementById('registerButton');
+        if (window.PublicKeyCredential){
+            PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+            .then((result)=>{
+                if (result){
+                    console.log("対応しています")
+                }else{
+                    registerButton.disabled = true;
+                }
+            })
+        }
+    })()
+</script>
+
+</body>
+</html>

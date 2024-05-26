@@ -1,0 +1,232 @@
+@font-face {
+  font-family: "midashi";
+  src: url(../font/JuliusSansOne-Regular.ttf);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+
+  font-weight: lighter;
+  /* display: block; */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body {
+  background: #53c2c6;
+}
+
+.wrapper {
+  background: linear-gradient(top left, #38b48d 0%, #53e3a6 100%);
+
+  /* height: 100vh; */
+  text-align: center;
+}
+
+p {
+  font-size: 20px;
+  color: white;
+}
+
+h2 {
+  font-size: 70px;
+  color: white;
+  font-family: midashi;
+  font-weight: 200;
+  border: none;
+  outline: none;
+  padding-top: 80px;
+  padding-bottom: 20px;
+}
+
+input {
+  display: block;
+
+  outline: 0;
+
+  width: 450px;
+  border-radius: 5px;
+  padding: 15px 18px;
+  margin: 0 auto 10px auto;
+  display: block;
+  text-align: center;
+  font-size: 18px;
+
+  color: white;
+
+  transition-duration: 0.25s;
+  font-weight: 300;
+  margin-top: 50px;
+  font-size: 20px;
+}
+input:hover {
+  background-color: fade(rgba(255, 255, 255, 0.418), 40%);
+}
+
+input:focus {
+  background-color: white;
+  width: 480px;
+}
+
+::placeholder {
+  color: white;
+  /* 文字の太さ */
+  font-weight: lighter;
+  font-size: 20px;
+}
+:focus::placeholder {
+  opacity: 0;
+}
+
+button {
+  appearance: none;
+  outline: 0;
+  background-color: white;
+  border: 1px solid white;
+  padding: 15px 18px;
+  border-radius: 3px;
+  width: 450px;
+  cursor: pointer;
+  font-size: 18px;
+  transition-duration: 0.25s;
+  margin-top: 15px;
+  font-size: 20px;
+}
+
+.signup {
+  background: none;
+  border-color: white;
+  color: white;
+  margin-top: 170px;
+}
+
+.up {
+  border-color: white;
+}
+.signup:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.botan {
+  color: #4ec5a1;
+  margin-top: 50px;
+}
+
+.botan:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+#username {
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+#username:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+#username:focus {
+  background-color: white;
+  color: #4ec5a1;
+}
+
+#password {
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+#password:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+#password:focus {
+  background-color: white;
+  color: #4ec5a1;
+}
+
+.wordbutton {
+  color: #106d95;
+}
+.wordbutton:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.keybutton {
+  color: #229b65;
+}
+.keybutton:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.user2 {
+  pointer-events: none;
+}
+
+.buttonset {
+  margin-top: 100px;
+}
+
+.container {
+  width: 700px;
+  border: 1px solid white;
+  padding-bottom: 30px;
+  margin-top: 40px;
+}
+
+#botan1 {
+  margin-top: 130px;
+  margin-bottom: 80px;
+}
+
+#username {
+  margin-top: 100px;
+}
+
+.jp {
+  margin-top: 10px;
+  font-size: 12px;
+  color: white;
+}
+
+.message {
+  margin-top: 30px;
+}
+
+.ok {
+  color: rgb(26, 146, 231);
+}
+.ok:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.no {
+  color: rgb(246, 123, 123);
+}
+.no:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.okno {
+  margin-top: 60px;
+}
+.namae {
+  font-size: 25px;
+}
+
+li {
+  display: block;
+  background-color: rgba(255, 255, 255, 0.2);
+  outline: 0;
+
+  width: 450px;
+  border-radius: 5px;
+  padding: 15px 18px;
+  margin: 0 auto 10px auto;
+  display: block;
+  text-align: center;
+  font-size: 18px;
+
+  color: white;
+
+  transition-duration: 0.25s;
+
+  font-size: 20px;
+}

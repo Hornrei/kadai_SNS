@@ -1,0 +1,12 @@
+services:
+  flask:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    ports:
+      - 80:8080
+    volumes:
+      - ./app:/app
+    environment:
+      - FLASK_APP=app.py
+      # - FLASK_ENV=development
